@@ -1,16 +1,14 @@
 package com.dylanmooresoftware.bbs.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,6 +21,7 @@ import com.dylanmooresoftware.bbs.model.BeerStyle;
 
 @Repository
 public class BeerDao {
+  private static final Logger logger = Logger.getLogger(BeerDao.class);
 
   @Autowired
   private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -44,7 +43,7 @@ public class BeerDao {
     + "  br.ibu as beer_ibu,"
     + "  br.brewerydb_create_date as beer_brewerydb_create_date,"
     + "  bs.pk as style_pk,"
-    + "  bs.brewerydb_id as style_id,"
+    + "  bs.brewerydb_id as style_brewerydb_id,"
     + "  bs.name as style_name,"
     + "  bs.description as style_description,"
     + "  bs.ibu_min as style_ibu_min,"
@@ -57,7 +56,18 @@ public class BeerDao {
 
   @Transactional
   public int store(Beer beer) {
+    final Beer existingBeer = findByBreweryDbId(beer.getBreweryDbId());
+    
+    logger.debug(String.format("for beer breweryDbId: %s, found: %s", beer.getBreweryDbId(), existingBeer));
+    
+    if (existingBeer != null) {
+      return existingBeer.getPk();
+    }
+    
     final BeerStyle existingStyle = beerStyleDao.findByBreweryDbId(beer.getStyle().getBreweryDbId());
+    
+    logger.debug(String.format("for style breweryDbId: %s, found: %s", beer.getStyle().getBreweryDbId(), existingStyle));
+    
     int beerStylePk = -1;
     if (existingStyle == null) {
       beerStylePk = beerStyleDao.storeBeerStyle(beer.getStyle());
@@ -69,52 +79,54 @@ public class BeerDao {
     
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
-    namedParameterJdbcTemplate.getJdbcOperations().update(
-      new PreparedStatementCreator() {
-        
-        @Override
-        public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
+    namedParameterJdbcTemplate.getJdbcOperations().update(conn -> {
           PreparedStatement ps = conn.prepareStatement(
               "insert into beer "
-            + "(brewerydb_id, "
-            + " name, "
+            + "(name, "
+            + " brewerydb_id, "
+            + " brewerydb_brewery_id, "
             + " description, "
-            + " ibu_min, "
-            + " ibu_max, "
-            + " abv_min, "
-            + " abv_max, "
-            + " brewerydb_create_date) "
+            + " abv, "
+            + " ibu, "
+            + " brewerydb_create_date,"
+            + " style_fk) "
             + " values "
-            + "(?,"
-            + " ?,"
-            + " ?,"
-            + " ?,"
-            + " ?,"
-            + " ?,"
-            + " ?,"
-            + " ?)",
+            + "(?, ?, ?, ?, ?, ?, ?, ?)",
             Statement.RETURN_GENERATED_KEYS);
          
             int i = 1;
-//            ps.setInt(i++, style.getBreweryDbId());
-//            ps.setString(i++, style.getName());
-//            ps.setString(i++, style.getDescription());
-//            ps.setInt(i++, style.getIbuMin());
-//            ps.setInt(i++, style.getIbuMax());
-//            ps.setDouble(i++, style.getAbvMin());
-//            ps.setDouble(i++, style.getAbvMax());
-//            ps.setTimestamp(i++, new Timestamp(style.getBreweryDbCreateDate().getTime()));
+            ps.setString(i++, beer.getName());
+            ps.setString(i++, beer.getBreweryDbId());
+            ps.setString(i++, beer.getBreweryDbBreweryId());
+            ps.setString(i++, beer.getDescription());
+            ps.setDouble(i++, beer.getAbv());
+            ps.setInt(i++, beer.getIbu());
+            ps.setTimestamp(i++, new Timestamp(beer.getBreweryDbCreateDate().getTime()));
+            ps.setInt(i++, beer.getStyle().getPk());
           
             return ps;
-        }
-      },
-      keyHolder
-    );
+            
+      }, keyHolder);
     
     return keyHolder.getKey().intValue();
   }
   
-  public Beer findByBreweryDbBeerId(final String id) {
+  public Beer find(final int pk) {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("pk", pk);
+    
+    final List<Beer> beers = namedParameterJdbcTemplate.query(
+        beerFindSql
+        + "where "
+        + "  br.pk = :pk",
+        params,
+        beerRowMapper
+    );
+    
+    return beers.size() > 0 ? beers.get(0) : null;
+  }
+  
+  public Beer findByBreweryDbId(final String id) {
     final Map<String, Object> params = new HashMap<>();
     params.put("breweryDbBeerId", id);
     

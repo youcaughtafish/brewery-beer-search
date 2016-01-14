@@ -2,6 +2,8 @@ package com.dylanmooresoftware.bbs.model;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class BeerStyle {
   private int pk;
   private int breweryDbId;
@@ -66,6 +68,20 @@ public class BeerStyle {
   }
   public void setBreweryDbCreateDate(Date breweryDbCreateDate) {
     this.breweryDbCreateDate = breweryDbCreateDate;
+  }
+  @Override
+  public String toString() {
+    ToStringBuilder builder = new ToStringBuilder(this);
+    builder.append("pk", pk);
+    builder.append("breweryDbId", breweryDbId);
+    builder.append("name", name);
+    builder.append("description", description);
+    builder.append("abvMin", abvMin);
+    builder.append("abvMax", abvMax);
+    builder.append("ibuMin", ibuMin);
+    builder.append("ibuMax", ibuMax);
+    builder.append("breweryDbCreateDate", breweryDbCreateDate);
+    return builder.toString();
   }
   
   

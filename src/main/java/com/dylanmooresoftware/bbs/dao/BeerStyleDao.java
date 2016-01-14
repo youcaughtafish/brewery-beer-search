@@ -31,11 +31,7 @@ public class BeerStyleDao {
   public int storeBeerStyle(BeerStyle style) {
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
-    namedParameterJdbcTemplate.getJdbcOperations().update(
-      new PreparedStatementCreator() {
-        
-        @Override
-        public PreparedStatement createPreparedStatement(Connection conn) throws SQLException {
+    namedParameterJdbcTemplate.getJdbcOperations().update(conn -> {
           PreparedStatement ps = conn.prepareStatement(
               "insert into beer_style "
             + "(brewerydb_id, "
@@ -68,10 +64,8 @@ public class BeerStyleDao {
             ps.setTimestamp(i++, new Timestamp(style.getBreweryDbCreateDate().getTime()));
           
             return ps;
-        }
-      },
-      keyHolder
-    );
+            
+      }, keyHolder);
     
     return keyHolder.getKey().intValue();
   }
@@ -83,7 +77,7 @@ public class BeerStyleDao {
     final List<BeerStyle> styles = namedParameterJdbcTemplate.query(
           "select "
         + "  bs.pk as style_pk,"
-        + "  bs.brewerydb_id as style_id,"
+        + "  bs.brewerydb_id as style_brewerydb_id,"
         + "  bs.name as style_name,"
         + "  bs.description as style_description,"
         + "  bs.ibu_min as style_ibu_min,"
@@ -91,7 +85,7 @@ public class BeerStyleDao {
         + "  bs.abv_max as style_abv_max,"
         + "  bs.brewerydb_create_date as style_brewerydb_create_date "
         + "from "
-        + "  beer_style bs"
+        + "  beer_style bs "
         + "where "
         + "  bs.brewerydb_id = :breweryDbId",
         params,
