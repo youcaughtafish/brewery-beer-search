@@ -4,10 +4,10 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class BeerStyle {
+public class BreweryDbBeerStyle {
   private Integer id;
   private Integer categoryId;
-  private BeerStyleCategory category;
+  private BreweryDbBeerStyleCategory category;
   private String name;
   private String shortName;
   private String description;
@@ -35,10 +35,10 @@ public class BeerStyle {
   public void setCategoryId(Integer categoryId) {
     this.categoryId = categoryId;
   }
-  public BeerStyleCategory getCategory() {
+  public BreweryDbBeerStyleCategory getCategory() {
     return category;
   }
-  public void setCategory(BeerStyleCategory category) {
+  public void setCategory(BreweryDbBeerStyleCategory category) {
     this.category = category;
   }
   public String getName() {

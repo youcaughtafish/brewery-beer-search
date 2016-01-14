@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.dylanmooresoftware.bbs.config.WebAppConfigurationAware;
-import com.dylanmooresoftware.bbs.model.brewerydb.Beer;
+import com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbBeer;
 
 import junit.framework.TestCase;
 
@@ -17,7 +17,7 @@ public class BreweryDbServiceTest extends WebAppConfigurationAware {
   
   @Test
   public void testFindBeers() throws IOException {
-    final List<Beer> beers = breweryDbService.findBeers();
+    final List<BreweryDbBeer> beers = breweryDbService.findBeers();
     TestCase.assertNotNull(beers);
     TestCase.assertTrue(beers.size() > 0);
   }

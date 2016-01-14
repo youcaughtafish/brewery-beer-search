@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class BreweryDbResponse {
   private String message;
   private String errorMessage;
-  private List<Beer> data;
+  private List<BreweryDbBeer> data;
   
   public String getMessage() {
     return message;
@@ -15,10 +15,10 @@ public class BreweryDbResponse {
   public void setMessage(String message) {
     this.message = message;
   }
-  public List<Beer> getData() {
+  public List<BreweryDbBeer> getData() {
     return data;
   }
-  public void setData(List<Beer> beers) {
+  public void setData(List<BreweryDbBeer> beers) {
     this.data = beers;
   }
   public String getErrorMessage() {

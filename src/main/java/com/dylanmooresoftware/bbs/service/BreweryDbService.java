@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
-import com.dylanmooresoftware.bbs.model.brewerydb.Beer;
+import com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbBeer;
 import com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,7 +46,7 @@ public class BreweryDbService {
     this.currentBreweryId = currentBreweryId;
   }
   
-  public List<Beer> findBeers() throws IOException {
+  public List<BreweryDbBeer> findBeers() throws IOException {
     Assert.notNull(getCurrentBreweryId());
     Assert.notNull(breweryDbBreweryUrl);
     

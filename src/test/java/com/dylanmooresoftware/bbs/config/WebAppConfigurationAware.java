@@ -14,19 +14,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.dylanmooresoftware.bbs.config.ApplicationConfig;
-import com.dylanmooresoftware.bbs.config.LuceneConfig;
-import com.dylanmooresoftware.bbs.config.WebMvcConfig;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles("test")
 @WebAppConfiguration
 @ContextConfiguration(classes = {
         ApplicationConfig.class,
+        EmbeddedDataSourceConfig.class,
         WebMvcConfig.class,
-        LuceneConfig.class
 })
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:persistence.properties")
 public abstract class WebAppConfigurationAware {
   @Inject
   protected WebApplicationContext wac;
