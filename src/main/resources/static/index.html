@@ -7,16 +7,19 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
   <style>
-    .row {
-      margin: 1.5rem;
-    }
-
-    #search-btn {
-      margin-top: 2rem;
-      width: 15rem;
-    }
+  .row {
+    margin: 1.5rem;
+  }
+  
+  #search-btn {
+    margin-top: 2rem;
+    width: 15rem;
+  }
+  
+  #results-row {
+    margin-top: 3rem;
+  }
   </style>
 </head>
 
@@ -46,16 +49,39 @@
         <button id="search-btn" class="btn btn-default">Search</button>
       </div>
     </div>
+    <div class="row" id="results-row">
+      <div class="col-md-4">
+        <h4 id="results-count">Results:</h4>
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-12">
-        <table id="results-table" class="table table-striped">
+        <table id="results-table" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Description</th>
+              <th>ABV</th>
+              <th>IBU</th>
+              <th>Created Date</th>
+          </thead>
+          <tbody></tbody>
         </table>
       </div>
     </div>
   </div>
   <script>
   (function($) {
+    'use strict';
+
     $('#search-btn').click(handleSearch);
+    $('#search-input').keypress(function(e) {
+      var code = e.keyCode || e.which;
+      if (code == 13) { //Enter keycode
+        handleSearch();
+      }
+    });
 
     function handleSearch() {
       var maxAbv = $('#max-abv-input').val();
@@ -75,10 +101,85 @@
 
       queryString += 'search=' + encodeURIComponent(search);
 
+      var $resultsTable = $('#results-table');
+      var $resultsCount = $('#results-count');
       $.get('/beer-search' + queryString, function(results) {
         console.log(JSON.stringify(results));
+
+        $resultsCount.text(results.length + ' Result' + (results.length === 1 ? '' : 's') + ':');
+        $resultsTable.find('tbody > tr').remove();
+        results.forEach(function(beer) {
+          addResultRow($resultsTable, beer);
+        });
       });
     }
+
+    function addResultRow($table, beer) {
+      var $tr = $('<tr>');
+      var $nameTd = $('<td>');
+
+      $nameTd.text(getValueWithOptionals('name', [beer, beer.style]));
+      $tr.append($nameTd);
+
+      var $idTd = $('<td>');
+      $idTd.text(beer.breweryDbId);
+      $tr.append($idTd);
+
+      var $descrTd = $('<td>');
+      $descrTd.text(getValueWithOptionals('description', [beer, beer.style]));
+      $tr.append($descrTd);
+
+      var $abvTd = $('<td>');
+      $abvTd.text(getValueOrRange(beer, 'abv', beer.style, 'abvMin', 'abvMax'));
+      $tr.append($abvTd);
+
+      var $ibuTd = $('<td>');
+      $ibuTd.text(getValueOrRange(beer, 'ibu', beer.style, 'ibuMin', 'ibuMax'));
+      $tr.append($ibuTd);
+
+      var $createDateTd = $('<td>');
+      var createDate = getValueWithOptionals('breweryDbCreateDate', [beer, beer.style]);
+      $createDateTd.text(formatDate(createDate));
+      $tr.append($createDateTd);
+
+      $table.append($tr);
+    }
+
+    function formatDate(dateMs) {
+      var date = new Date(dateMs);
+
+      var monthStr = (date.getMonth() + 1).toString();
+      if (monthStr.length === 1) {
+        monthStr = '0' + monthStr;
+      }
+
+      var dayStr = date.getDate();
+      var yearStr = date.getFullYear().toString().substring(2);
+
+      return monthStr + '/' + dayStr + '/' + yearStr;
+    }
+
+    function getValueOrRange(obj1, fieldName, obj2, fieldMin, fieldMax) {
+      if (obj1[fieldName]) {
+        return obj1[fieldName];
+      } else {
+        return obj2[fieldMin] + '-' + obj2[fieldMax];
+      }
+    }
+
+    function getValueWithOptionals(fieldName, optionalObjects) {
+      if (optionalObjects && optionalObjects.length) {
+        for (var i = 0; i < optionalObjects.length; i++) {
+          var ea = optionalObjects[i];
+          if (ea[fieldName]) {
+            return ea[fieldName];
+          }
+        }
+      }
+
+      return '';
+    }
+
   })(jQuery);
   </script>
 

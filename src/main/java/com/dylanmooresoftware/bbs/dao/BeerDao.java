@@ -65,7 +65,8 @@ public class BeerDao {
       + "where "
       + "  (br.abv >= :minAbv and br.abv <= :maxAbv)"
       + "  and (lower(br.description) like :query "
-      +"       or lower(br.name) like :query)",
+      +"       or lower(br.name) like :query) "
+      +"order by br.brewerydb_create_date desc",
       params,
       beerRowMapper);
   }
