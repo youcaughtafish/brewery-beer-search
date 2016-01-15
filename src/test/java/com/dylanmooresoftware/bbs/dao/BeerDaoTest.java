@@ -26,7 +26,7 @@ public class BeerDaoTest extends WebAppConfigurationAware{
     final Beer beer = createDummyBeerAndStyle();
     beer.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
-    Assert.isTrue(beerDao.store(beer) == beerDao.store(beer));
+    Assert.isTrue(beerDao.storeByBreweryDbId(beer) == beerDao.storeByBreweryDbId(beer));
   }
   
   @Test
@@ -37,7 +37,7 @@ public class BeerDaoTest extends WebAppConfigurationAware{
     final Beer beer2 = createDummyBeerAndStyle();
     beer2.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
-    Assert.isTrue(beerDao.store(beer1) != beerDao.store(beer2));
+    Assert.isTrue(beerDao.storeByBreweryDbId(beer1) != beerDao.storeByBreweryDbId(beer2));
   }
   
   @Test
@@ -48,8 +48,8 @@ public class BeerDaoTest extends WebAppConfigurationAware{
     final Beer beer2 = createDummyBeerAndStyle();
     beer2.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
-    final Beer foundBeer1 = beerDao.find(beerDao.store(beer1));
-    final Beer foundBeer2 = beerDao.find(beerDao.store(beer2));
+    final Beer foundBeer1 = beerDao.find(beerDao.storeByBreweryDbId(beer1));
+    final Beer foundBeer2 = beerDao.find(beerDao.storeByBreweryDbId(beer2));
     
     Assert.isTrue(foundBeer1.getPk() != foundBeer2.getPk());
     Assert.isTrue(foundBeer1.getStyle().getPk() == foundBeer2.getStyle().getPk());
@@ -60,7 +60,7 @@ public class BeerDaoTest extends WebAppConfigurationAware{
     final Beer beer = createDummyBeerAndStyle();
     beer.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
-    int beerPk = beerDao.store(beer);
+    int beerPk = beerDao.storeByBreweryDbId(beer);
     Assert.isTrue(beerPk >= 0);
     
     final Beer foundBeer = beerDao.find(beerPk);

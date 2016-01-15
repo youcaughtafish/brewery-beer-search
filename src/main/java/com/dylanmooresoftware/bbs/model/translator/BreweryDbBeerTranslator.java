@@ -7,6 +7,16 @@ import com.dylanmooresoftware.bbs.model.BeerStyle;
 import com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbBeer;
 import com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbBeerStyle;
 
+/**
+ * 
+ * Translates a com.dylanmooresoftware.bbs.model.brewerydb.BreweryDbBeer
+ * (a BreweryDB API-defined schema for a beer) into a 
+ * com.dylanmooresoftware.bbs.model.Beer (the project definition of a
+ * beer). 
+ * 
+ * Note that due to the lack of BreweryId being returned by BreweryDB,
+ * the Beer#breweryDbBreweryId field is not mapped in this class.
+ */
 @Component
 public class BreweryDbBeerTranslator implements ModelTranslator<BreweryDbBeer, Beer> {
 

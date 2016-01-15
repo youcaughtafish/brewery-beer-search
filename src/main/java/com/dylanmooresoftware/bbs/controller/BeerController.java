@@ -27,7 +27,7 @@ public class BeerController {
   public List<Beer> beerSearch(
     @RequestParam(name = "minAbv", defaultValue = "0", required = false) double minAbv,
     @RequestParam(name = "maxAbv", defaultValue = "100", required = false) double maxAbv,
-    @RequestParam(name = "search") String search)
+    @RequestParam(name = "search", defaultValue = "", required = false) String search)
   {
     return beerService.beerSearch(minAbv, maxAbv, search);
   }

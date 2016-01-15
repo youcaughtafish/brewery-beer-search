@@ -6,6 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * 
+ * Calls BeerService#populateDbBeersForBrewery after initialization
+ * with the brewery id specified by the default.brewery.id property
+ */
 @Component
 public class BeerDbPopulatorService {
   @Value("${default.brewery.id}")

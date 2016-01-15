@@ -25,9 +25,6 @@ import com.google.gson.stream.JsonReader;
 public class BreweryDbService {
   private static final Logger logger = Logger.getLogger(BreweryDbService.class);
   
-  @Value("${default.brewery.id}")
-  private String defaultBreweryId;
-  
   @Value("${brewerydb.brewery.url}")
   private String breweryDbBreweryUrl;
   
@@ -35,6 +32,12 @@ public class BreweryDbService {
       .setDateFormat("yyyy-MM-dd HH:mm:ss")
       .create();
   
+ /**
+  * 
+  * Calls the BreweryDB API given a BreweryID and maps the
+  * results onto a list of {@link BreweryDbBeer}s
+  *
+  */
   public List<BreweryDbBeer> findBeers(final String breweryDbBreweryId) throws IOException {
     Assert.notNull(breweryDbBreweryId);
     Assert.notNull(breweryDbBreweryUrl);
