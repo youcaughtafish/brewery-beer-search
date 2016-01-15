@@ -19,9 +19,12 @@ public class BeerDaoTest extends WebAppConfigurationAware{
   @Autowired
   private BeerDao beerDao;
   
+  private int breweryIdTicker = 1;
+  
   @Test
   public void testStoreAndFindExistingBeer() throws ParseException {
     final Beer beer = createDummyBeerAndStyle();
+    beer.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
     Assert.isTrue(beerDao.store(beer) == beerDao.store(beer));
   }
@@ -29,8 +32,10 @@ public class BeerDaoTest extends WebAppConfigurationAware{
   @Test
   public void testStoreAndFindNewWithExistingBeer() throws ParseException {
     final Beer beer1 = createDummyBeerAndStyle();
+    beer1.setBreweryDbId(String.valueOf(breweryIdTicker++));
+    
     final Beer beer2 = createDummyBeerAndStyle();
-    beer2.setBreweryDbId("hello");
+    beer2.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
     Assert.isTrue(beerDao.store(beer1) != beerDao.store(beer2));
   }
@@ -38,8 +43,10 @@ public class BeerDaoTest extends WebAppConfigurationAware{
   @Test
   public void testStoreAndFindNewWithExistingBeerSameStyle() throws ParseException {
     final Beer beer1 = createDummyBeerAndStyle();
+    beer1.setBreweryDbId(String.valueOf(breweryIdTicker++));
+    
     final Beer beer2 = createDummyBeerAndStyle();
-    beer2.setBreweryDbId("hello");
+    beer2.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
     final Beer foundBeer1 = beerDao.find(beerDao.store(beer1));
     final Beer foundBeer2 = beerDao.find(beerDao.store(beer2));
@@ -51,6 +58,7 @@ public class BeerDaoTest extends WebAppConfigurationAware{
   @Test
   public void testStoreAndFindNewBeer() throws ParseException {
     final Beer beer = createDummyBeerAndStyle();
+    beer.setBreweryDbId(String.valueOf(breweryIdTicker++));
     
     int beerPk = beerDao.store(beer);
     Assert.isTrue(beerPk >= 0);
