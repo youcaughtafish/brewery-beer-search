@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -36,21 +35,11 @@ public class BreweryDbService {
       .setDateFormat("yyyy-MM-dd HH:mm:ss")
       .create();
   
-  private String currentBreweryId;
-  
-  public String getCurrentBreweryId() {
-    return currentBreweryId == null ? defaultBreweryId : currentBreweryId;
-  }
-  
-  public void setCurrentBreweryId(String currentBreweryId) {
-    this.currentBreweryId = currentBreweryId;
-  }
-  
-  public List<BreweryDbBeer> findBeers() throws IOException {
-    Assert.notNull(getCurrentBreweryId());
+  public List<BreweryDbBeer> findBeers(final String breweryDbBreweryId) throws IOException {
+    Assert.notNull(breweryDbBreweryId);
     Assert.notNull(breweryDbBreweryUrl);
     
-    final String beersForBreweryUrl = String.format(breweryDbBreweryUrl, getCurrentBreweryId());
+    final String beersForBreweryUrl = String.format(breweryDbBreweryUrl, breweryDbBreweryId);
     
     logger.debug(String.format("Using url: %s", beersForBreweryUrl));
     

@@ -1,8 +1,6 @@
 package com.dylanmooresoftware.bbs.dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -10,9 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -54,14 +50,14 @@ public class BeerStyleDao {
             Statement.RETURN_GENERATED_KEYS);
          
             int i = 1;
-            ps.setInt(i++, style.getBreweryDbId());
+            DaoUtils.setIntOrNull(ps, i++, style.getBreweryDbId());
             ps.setString(i++, style.getName());
             ps.setString(i++, style.getDescription());
-            ps.setInt(i++, style.getIbuMin());
-            ps.setInt(i++, style.getIbuMax());
-            ps.setDouble(i++, style.getAbvMin());
-            ps.setDouble(i++, style.getAbvMax());
-            ps.setTimestamp(i++, new Timestamp(style.getBreweryDbCreateDate().getTime()));
+            DaoUtils.setIntOrNull(ps, i++, style.getIbuMin());
+            DaoUtils.setIntOrNull(ps, i++, style.getIbuMax());
+            DaoUtils.setDoubleOrNull(ps, i++, style.getAbvMin());
+            DaoUtils.setDoubleOrNull(ps, i++, style.getAbvMax());
+            DaoUtils.setTimestampOrNull(ps, i++, style.getBreweryDbCreateDate());
           
             return ps;
             

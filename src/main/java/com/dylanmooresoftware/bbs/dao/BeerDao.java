@@ -58,21 +58,21 @@ public class BeerDao {
   public int store(Beer beer) {
     final Beer existingBeer = findByBreweryDbId(beer.getBreweryDbId());
     
-    logger.debug(String.format("for beer breweryDbId: %s, found: %s", beer.getBreweryDbId(), existingBeer));
-    
     if (existingBeer != null) {
+      logger.debug(String.format("for existing beer: %s, found pk: %s", beer.getBreweryDbId(), existingBeer.getPk()));
       return existingBeer.getPk();
     }
     
     final BeerStyle existingStyle = beerStyleDao.findByBreweryDbId(beer.getStyle().getBreweryDbId());
     
-    logger.debug(String.format("for style breweryDbId: %s, found: %s", beer.getStyle().getBreweryDbId(), existingStyle));
-    
     int beerStylePk = -1;
     if (existingStyle == null) {
       beerStylePk = beerStyleDao.storeBeerStyle(beer.getStyle());
+      logger.debug(String.format("for new beer style: %s, stored under pk: %s", beer.getStyle().getBreweryDbId(), beerStylePk));
+      
     } else {
       beerStylePk = existingStyle.getPk();
+      logger.debug(String.format("for existing beer style: %s, found pk: %s", beer.getStyle().getBreweryDbId(), beerStylePk));
     }
     
     beer.getStyle().setPk(beerStylePk);
@@ -99,16 +99,19 @@ public class BeerDao {
             ps.setString(i++, beer.getBreweryDbId());
             ps.setString(i++, beer.getBreweryDbBreweryId());
             ps.setString(i++, beer.getDescription());
-            ps.setDouble(i++, beer.getAbv());
-            ps.setInt(i++, beer.getIbu());
-            ps.setTimestamp(i++, new Timestamp(beer.getBreweryDbCreateDate().getTime()));
-            ps.setInt(i++, beer.getStyle().getPk());
+            DaoUtils.setDoubleOrNull(ps, i++, beer.getAbv());
+            DaoUtils.setIntOrNull(ps, i++, beer.getIbu());
+            DaoUtils.setTimestampOrNull(ps, i++, beer.getBreweryDbCreateDate());
+            DaoUtils.setIntOrNull(ps, i++, beer.getStyle().getPk());
           
             return ps;
             
       }, keyHolder);
+   
+    final int newBeerPk = keyHolder.getKey().intValue();
+    logger.debug(String.format("for new beer with id: %s, stored under pk: %s", beer.getBreweryDbId(), beer.getPk()));
     
-    return keyHolder.getKey().intValue();
+    return newBeerPk;
   }
   
   public Beer find(final int pk) {

@@ -1,7 +1,7 @@
 create table beer_style (
   pk integer identity,
   brewerydb_id integer,
-  name varchar(50),
+  name varchar(100),
   description varchar(4000),
   ibu_min integer,
   ibu_max integer,
@@ -13,7 +13,7 @@ create table beer_style (
 
 create table beer (
   pk integer identity,
-  name varchar(50),
+  name varchar(100),
   brewerydb_id varchar(8),
   brewerydb_brewery_id varchar(8),
   description varchar(4000),
