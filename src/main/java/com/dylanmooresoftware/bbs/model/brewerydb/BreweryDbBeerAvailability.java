@@ -2,7 +2,7 @@ package com.dylanmooresoftware.bbs.model.brewerydb;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class BeerAvailability {
+public class BreweryDbBeerAvailability {
   private Integer id;
   private String name;
   private String description;

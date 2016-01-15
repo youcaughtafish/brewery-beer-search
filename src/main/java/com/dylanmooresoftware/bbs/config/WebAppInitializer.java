@@ -10,10 +10,10 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     protected String[] getServletMappings() {
         return new String[]{"/"};
     }
-
+    
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[] {ApplicationConfig.class, LuceneConfig.class};
+        return new Class<?>[] {ApplicationConfig.class, EmbeddedDataSourceConfig.class};
     }
 
     @Override

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Beer {
+public class BreweryDbBeer {
   private String id;
   private String name;
   private String nameDisplay;
@@ -19,9 +19,9 @@ public class Beer {
   private String statusDisplay;
   private Date createDate;
   private Date updateDate;
-  private BeerGlass glass;
-  private BeerAvailability available;
-  private BeerStyle style;
+  private BreweryDbBeerGlass glass;
+  private BreweryDbBeerAvailability available;
+  private BreweryDbBeerStyle style;
   
   public String getId() {
     return id;
@@ -107,22 +107,22 @@ public class Beer {
   public void setUpdateDate(Date updateDate) {
     this.updateDate = updateDate;
   }
-  public BeerGlass getGlass() {
+  public BreweryDbBeerGlass getGlass() {
     return glass;
   }
-  public void setGlass(BeerGlass glass) {
+  public void setGlass(BreweryDbBeerGlass glass) {
     this.glass = glass;
   }
-  public BeerAvailability getAvailable() {
+  public BreweryDbBeerAvailability getAvailable() {
     return available;
   }
-  public void setAvailable(BeerAvailability available) {
+  public void setAvailable(BreweryDbBeerAvailability available) {
     this.available = available;
   }
-  public BeerStyle getStyle() {
+  public BreweryDbBeerStyle getStyle() {
     return style;
   }
-  public void setStyle(BeerStyle style) {
+  public void setStyle(BreweryDbBeerStyle style) {
     this.style = style;
   }
   @Override

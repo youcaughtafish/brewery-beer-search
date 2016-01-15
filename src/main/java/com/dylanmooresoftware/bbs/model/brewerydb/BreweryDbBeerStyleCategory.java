@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class BeerStyleCategory {
+public class BreweryDbBeerStyleCategory {
   private Integer id;
   private String name;
   private Date createDate;
