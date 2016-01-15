@@ -2,11 +2,11 @@ package com.dylanmooresoftware.bbs.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -53,6 +53,22 @@ public class BeerDao {
     + "from "
     + "  beer br join beer_style bs"
     + "  on (br.style_fk = bs.pk) ";
+  
+  public List<Beer> beerSearch(double minAbv, double maxAbv, String query) {
+    final Map<String, Object> params = new HashMap<>();
+    params.put("minAbv", minAbv);
+    params.put("maxAbv", maxAbv);
+    params.put("query", query);
+    
+    return namedParameterJdbcTemplate.query(
+        beerFindSql
+      + "where "
+      + "  (br.abv >= :minAbv and br.abv <= :maxAbv)"
+      + "  and (lower(br.description) like :query "
+      +"       or lower(br.name) like :query)",
+      params,
+      beerRowMapper);
+  }
 
   @Transactional
   public int store(Beer beer) {

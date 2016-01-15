@@ -8,6 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -36,4 +37,8 @@ class WebMvcConfig extends WebMvcConfigurationSupport {
         configurer.enable();
     }
     
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+      registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+    }
 }

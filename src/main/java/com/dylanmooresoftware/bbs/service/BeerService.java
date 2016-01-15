@@ -1,10 +1,12 @@
 package com.dylanmooresoftware.bbs.service;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +28,7 @@ public class BeerService {
 
   @Autowired
   private ModelTranslator<BreweryDbBeer, Beer> breweryDbBeerTranslator;
-
+  
   public boolean populateDbBeersForBrewery(final String breweryDbBreweryId) {
     boolean success = true;
     try {
@@ -52,4 +54,14 @@ public class BeerService {
 
     return success;
   }
+
+  public List<Beer> beerSearch(double minAbv, double maxAbv, String search) {
+    if (minAbv > maxAbv) return Collections.emptyList();
+   
+    String query = StringUtils.join("%", (search == null ? "" : search).trim(),"%");
+    
+    return beerDao.beerSearch(minAbv, maxAbv, query);
+  }
+
+  
 }

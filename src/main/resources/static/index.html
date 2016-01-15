@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Brewery Beer Search</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <style>
+    .row {
+      margin: 1.5rem;
+    }
+
+    #search-btn {
+      margin-top: 2rem;
+      width: 15rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Brewery Beer Search</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <label for="search-input">Search</label>
+        <input type="text" class="form-control" id="search-input" placeholder="Search...">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-2">
+        <label for="min-abv-input">Min ABV</label>
+        <input type="number" class="form-control" id="min-abv-input" placeholder="Min ABV...">
+      </div>
+      <div class="col-md-2">
+        <label for="max-abv-input">Max ABV</label>
+        <input type="number" class="form-control" id="max-abv-input" placeholder="Max ABV...">
+      </div>
+      <div class="col-md-2 col-md-offset-2">
+        <button id="search-btn" class="btn btn-default">Search</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table id="results-table" class="table table-striped">
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function($) {
+    $('#search-btn').click(handleSearch);
+
+    function handleSearch() {
+      var maxAbv = $('#max-abv-input').val();
+      var minAbv = $('#min-abv-input').val();
+      var search = $('#search-input').val();
+
+      console.log('maxAbv: ' + maxAbv + "; minAbv: " + minAbv + "; search: " + search);
+
+      var queryString = '?';
+      if (minAbv) {
+        queryString += 'minAbv=' + encodeURIComponent(minAbv) + '&';
+      }
+
+      if (maxAbv) {
+        queryString += 'maxAbv=' + encodeURIComponent(maxAbv) + '&';
+      }
+
+      queryString += 'search=' + encodeURIComponent(search);
+
+      $.get('/beer-search' + queryString, function(results) {
+        console.log(JSON.stringify(results));
+      });
+    }
+  })(jQuery);
+  </script>
+
+  <body>
+
+</html>
