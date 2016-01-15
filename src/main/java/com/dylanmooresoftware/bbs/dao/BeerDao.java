@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.dylanmooresoftware.bbs.model.Beer;
 import com.dylanmooresoftware.bbs.model.BeerStyle;
@@ -64,36 +62,39 @@ public class BeerDao {
         beerFindSql
       + "where "
       + "  (br.abv >= :minAbv and br.abv <= :maxAbv)"
-      + "  and (lower(br.description) like :query "
-      +"       or lower(br.name) like :query) "
+      + "  and (lower(br.description) like lower(:query) "
+      +"       or lower(br.name) like lower(:query)) "
       +"order by br.brewerydb_create_date desc",
       params,
       beerRowMapper);
   }
 
-  @Transactional
-  public int store(Beer beer) {
+  /**
+   * Stores the specified beer if the {@link Beer#getBreweryDbId()} field
+   * was not found in the database.  Note that existing 
+   * beers are not updated in this implementation.
+   * 
+   * The same logic is used to store new instances {@link Beer#getStyle()}
+   * (based on {@link BeerStyle#getBreweryDbId()}).  
+   * See {@link BeerStyleDao#storeBeerStyle(BeerStyle)} for more info.
+   * 
+   * @param beer
+   * @return pk of existing or newly-inserted {@link Beer}
+   */
+  public int storeByBreweryDbId(Beer beer) {
+    // lookup beer by BreweryDB id
     final Beer existingBeer = findByBreweryDbId(beer.getBreweryDbId());
-    
+   
+    // if we found one, return the pk
     if (existingBeer != null) {
       logger.debug(String.format("for existing beer: %s, found pk: %s", beer.getBreweryDbId(), existingBeer.getPk()));
       return existingBeer.getPk();
     }
-    
-    final BeerStyle existingStyle = beerStyleDao.findByBreweryDbId(beer.getStyle().getBreweryDbId());
-    
-    int beerStylePk = -1;
-    if (existingStyle == null) {
-      beerStylePk = beerStyleDao.storeBeerStyle(beer.getStyle());
-      logger.debug(String.format("for new beer style: %s, stored under pk: %s", beer.getStyle().getBreweryDbId(), beerStylePk));
-      
-    } else {
-      beerStylePk = existingStyle.getPk();
-      logger.debug(String.format("for existing beer style: %s, found pk: %s", beer.getStyle().getBreweryDbId(), beerStylePk));
-    }
-    
-    beer.getStyle().setPk(beerStylePk);
-    
+   
+    // store new (or lookup existing) beer style
+    beer.getStyle().setPk(beerStyleDao.storeBeerStyle(beer.getStyle()));
+
+    // insert a row representing the new beer
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     namedParameterJdbcTemplate.getJdbcOperations().update(conn -> {
@@ -161,7 +162,7 @@ public class BeerDao {
     return beers.size() > 0 ? beers.get(0) : null;
   }
   
-  public List<Beer> findByBreweryId(final String breweryId) {
+  public List<Beer> findByBreweryDbBreweryId(final String breweryId) {
     final Map<String, Object> params = new HashMap<>();
     params.put("breweryId", breweryId);
     
